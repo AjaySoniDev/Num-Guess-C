@@ -1,113 +1,150 @@
-<h1 align="center">Num-Guess C</h1>
+<h1 align="center">Num-Guess-C</h1>
 
 <p align="center">
-  <strong>Windows-based number guessing game written in C.</strong><br>
-  A beginner-friendly Win32 GUI project with hints, scoring, restart flow, and attempt tracking.
-</p>
-
-
-
-<p align="center">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/AjaySoni-Dev/Num-Guess-C?style=social">
-  <img alt="GitHub forks" src="https://img.shields.io/github/forks/AjaySoni-Dev/Num-Guess-C?style=social">
+  <strong>Native Win32 number-guessing game written in C.</strong><br>
+  A small desktop programming project demonstrating window creation, event-driven controls, validation, hints, scoring, restart state, and the Windows message loop.
 </p>
 
 <p align="center">
-  <img alt="status: learning project" src="https://img.shields.io/badge/status-learning%20project-blue">
-  <img alt="stack: C / Win32" src="https://img.shields.io/badge/stack-C%20/%20Win32-informational">
-  <img alt="license: MIT" src="https://img.shields.io/badge/license-MIT-green">
-
+  <img alt="Status" src="https://img.shields.io/badge/status-learning%20project-blue">
+  <img alt="Language" src="https://img.shields.io/badge/language-C-00599C">
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Windows-lightgrey">
+  <img alt="GUI" src="https://img.shields.io/badge/GUI-Win32-purple">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
 </p>
 
 <p align="center">
   <a href="#overview">Overview</a> ·
+  <a href="#what-this-repo-contains">Contents</a> ·
   <a href="#features">Features</a> ·
-  <a href="#files">Files</a> ·
-  <a href="#run-locally">Run Locally</a> ·
-  <a href="#limitations">Limitations</a>
+  <a href="#game-flow">Game Flow</a> ·
+  <a href="#build-and-run">Build & Run</a>
 </p>
 
 ---
 
 ## Overview
 
-**Num-Guess C** is a simple desktop game built in the C language using the Windows API. The player guesses a hidden number between 1 and 10, receives high/low feedback, can request hints, and earns or loses points based on the number of attempts.
+**Num-Guess-C** is a Windows desktop guessing game implemented directly with the Win32 API.
 
-This repository is best understood as a **beginner C GUI project** rather than an advanced game engine. Its value is in showing how C logic can be connected to GUI controls, event handling, scoring, random number generation, and basic user feedback.
+Each round selects a random integer from **1 to 10**. The player has up to **five valid attempts**. The application reports whether each guess is too high or too low, exposes a hint after repeated attempts, awards points for a successful guess, subtracts points after a failed round, and allows the user to restart.
 
-## Features
+---
 
-- Random number generation for each game round.
-- Win32 window creation using `windows.h`.
-- Input box for user guesses.
-- Buttons for guessing, hints, and restart.
-- Hint messages mapped to each target number.
-- Attempt tracking.
-- Score updates based on performance.
-- Game over state after too many failed attempts.
-- Screenshot included as `sample.png`.
-
-## Files
+## What This Repo Contains
 
 | File | Purpose |
 |---|---|
-| `guess_game.c` | Main source code for the Windows GUI game. |
-| `sample.png` | Visual sample/screenshot of the game interface. |
-| `README.md` | Original project documentation. |
-| `LICENSE.txt` | MIT license. |
+| <code>guess_game.c</code> | Complete Win32 GUI and game logic. |
+| <code>sample.png</code> | Screenshot / visual sample. |
+| <code>README.md</code> | Project documentation. |
+| <code>LICENSE.txt</code> | MIT License. |
 
-## How It Works
+---
 
-```text
-Application starts
-        ↓
-Random number is generated
-        ↓
-Player enters a guess
-        ↓
-Program compares guess with target
-        ↓
-Feedback is shown: too high, too low, correct, or game over
-        ↓
-Score and attempt state are updated
-```
+## Features
 
-The project uses global game state for the secret number, attempt count, and points. GUI events are handled through the Windows message loop.
+| Area | Current Implementation |
+|---|---|
+| Random target | <code>rand() % 10 + 1</code> after seeding with current time. |
+| GUI | Native Win32 window and child controls through <code>windows.h</code>. |
+| Guess validation | Accepts only values from 1 through 10; invalid values do not consume an attempt. |
+| Feedback | Too-high, too-low, success, and game-over messages. |
+| Attempts | Maximum of five valid guesses per round. |
+| Hints | Number-specific hint table; hint button becomes available after repeated attempts. |
+| Scoring | Earlier success earns more points; an exhausted round subtracts two points. |
+| Session score | Total points remain in memory while the process stays open. |
+| Restart | Resets the target and round state while retaining total session points. |
 
-## Run Locally
+---
 
-This project is designed for Windows.
+## Game Flow
 
-### Compile with GCC / MinGW
+~~~text
+Launch application
+   ↓
+Random number 1–10 is generated
+   ↓
+Enter a guess
+   ↓
+Validate range
+   ↓
+Compare with target
+   ├── too low
+   ├── too high
+   └── correct
+   ↓
+Update attempts / score
+   ↓
+Show hint when eligible
+   ↓
+Restart for another round
+~~~
 
-```bash
+---
+
+## Architecture
+
+~~~text
+WinMain
+   ↓
+RegisterClassW
+   ↓
+CreateWindowW
+   ↓
+WM_CREATE → AddControls
+   ↓
+Message loop
+   ↓
+WindowProcedure
+   ├── Guess button
+   ├── Hint button
+   ├── Restart button
+   └── WM_DESTROY
+~~~
+
+Game state is stored in process-level variables for the selected number, attempts, round points, and total points.
+
+---
+
+## Repository Structure
+
+~~~text
+Num-Guess-C/
+├── guess_game.c
+├── sample.png
+├── README.md
+└── LICENSE.txt
+~~~
+
+---
+
+## Build and Run
+
+The project is Windows-specific because it uses <code>windows.h</code>.
+
+~~~bash
 gcc guess_game.c -o num_guess.exe -mwindows
-```
+~~~
 
-### Run
+Run:
 
-```bash
+~~~bash
 num_guess.exe
-```
+~~~
 
-If you want console output while debugging, remove `-mwindows` during compilation.
+A normal console-linked build can be used while debugging by omitting <code>-mwindows</code>.
 
-## Limitations
+---
 
-- The game is Windows-only because it depends on `windows.h`.
-- The code is useful for learning but not structured as a reusable game framework.
-- GUI styling is basic and can be modernized.
-- The game range is fixed to 1–10.
-- No persistent leaderboard or saved scores are implemented.
+## Validation & Current Maturity
 
-## Recommended Improvements
+This repository is a **small educational GUI project**. It demonstrates event-driven C programming, Win32 controls, stateful game logic, and basic input validation.
 
-- Add comments explaining the Win32 message loop.
-- Separate game logic from UI code.
-- Add difficulty levels.
-- Add a persistent high-score file.
-- Add screenshots directly in the README.
+It does not include automated tests, cross-platform abstractions, persistent scores, difficulty modes, or a reusable game engine.
+
+---
 
 ## License
 
-This project is licensed under the MIT License.
+Released under the **MIT License**. See <code>LICENSE.txt</code>.
